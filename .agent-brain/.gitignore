@@ -1,0 +1,14 @@
+# Agent brain .gitignore
+
+# Farmer state files (ephemeral, session-specific)
+log/.context-farmer-last-run
+log/.*.last-run
+
+# Temporary/WIP files
+inbox/*.tmp
+inbox/*.wip
+tasks/**/*.wip
+
+# OS files
+.DS_Store
+Thumbs.db
