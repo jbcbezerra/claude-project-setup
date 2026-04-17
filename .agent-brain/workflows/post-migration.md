@@ -50,7 +50,14 @@ Check `rules/` for constraints that reference the old approach:
 - Remove rules that are no longer applicable
 - Add new rules for the new approach if needed
 
-### 6. Audit for remnants
+### 6. Verify migration completeness
+
+Use `superpowers:verification-before-completion` to ensure all migration claims are backed by evidence:
+- Run test suites and confirm all pass
+- Verify build succeeds with no warnings related to old approach
+- Check that no runtime errors occur in migrated code paths
+
+### 7. Audit for remnants
 
 Run the `brain-audit` agent to verify:
 - No imports of the old library remain
@@ -61,7 +68,7 @@ Run the `brain-audit` agent to verify:
 Use the brain-audit agent to scan for violations
 ```
 
-### 7. Update REGISTRY.md
+### 8. Update REGISTRY.md
 
 Ensure all new, modified, and deleted files are reflected in the registry.
 

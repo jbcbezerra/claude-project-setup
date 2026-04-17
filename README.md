@@ -4,6 +4,8 @@ A persistent knowledge system for coding agents. Drop it into any repo and give 
 
 Git-tracked markdown files organized into three tiers: **onramp** (read every session), **lookup** (read when relevant), and **write-back** (agent outputs). Skills automate maintenance, agents audit for drift, workflows guide multi-step operations. All skills and agents **auto-scale** — they assess repo size and spawn subagents in parallel for large codebases.
 
+**Integrates with plugins:** Works alongside `superpowers` (TDD, debugging, planning) and `claude-mem` (cross-session memory, AST exploration). Brain skills handle project knowledge; plugins handle development workflow.
+
 ---
 
 ## Quick Start
@@ -59,7 +61,8 @@ your-repo/
     ├── knowledge/               # Tier 2: domain logic, business rules
     ├── workflows/               # Tier 2: multi-step playbooks
     ├── commands/                # Tier 2: terminal command reference
-    ├── tasks/                   # Tier 3: active plans + handoffs
+    ├── specs/                   # Tier 3: design specs (from superpowers:brainstorming)
+    ├── tasks/                   # Tier 3: implementation plans + handoffs
     ├── log/                     # Tier 3: execution summaries
     └── inbox/                   # Tier 3: user drop zone
 ```
@@ -390,11 +393,14 @@ Steps:
 3. Archive or delete old patterns that reference the replaced approach
 4. Create an ADR documenting the migration decision
 5. Update or retire affected rules
-6. Run `brain-audit` to verify no old-pattern remnants remain
+6. `superpowers:verification-before-completion` — verify migration claims with evidence
+7. Run `brain-audit` to verify no old-pattern remnants remain
 
 ### new-feature-area
 
 **When**: Adding a new module or domain to the codebase.
+
+**Prerequisite**: For major features, run `superpowers:brainstorming` first to create a design spec (saved to `.agent-brain/specs/`) and implementation plan.
 
 Steps:
 1. Review existing patterns that apply to the new area
@@ -425,7 +431,7 @@ The brain is organized into three tiers based on *when* an agent reads them:
 |------|-------------|----------|
 | **1 — Onramp** | Every session start | `context/` — architecture, stack, setup |
 | **2 — Lookup** | When relevant to the task | `rules/`, `patterns/`, `decisions/`, `knowledge/`, `workflows/`, `commands/` |
-| **3 — Write-back** | Agent writes here | `tasks/`, `log/`, `inbox/` |
+| **3 — Write-back** | Agent writes here | `specs/`, `tasks/`, `log/`, `inbox/` |
 
 This prevents agents from wasting context window loading everything upfront. Tier-1 is always read. Tier-2 is pulled in selectively. Tier-3 is for outputs.
 
@@ -503,6 +509,39 @@ Run the pattern-miner agent on src/services/
 ```
 Run the test-pattern-miner agent on tests/
 ```
+
+---
+
+## Plugin Integration
+
+Agent Brain works alongside two complementary plugins:
+
+| Plugin | Purpose | Integration |
+|--------|---------|-------------|
+| **superpowers** | Development workflow (TDD, debugging, planning, code review) | Specs → `.agent-brain/specs/`, Plans → `.agent-brain/tasks/` |
+| **claude-mem** | Cross-session memory, AST exploration | Use `smart-explore` for token-efficient code navigation |
+
+### Workflow
+
+1. **Design**: `superpowers:brainstorming` → spec in `.agent-brain/specs/`
+2. **Plan**: `superpowers:writing-plans` → plan in `.agent-brain/tasks/`
+3. **Execute**: `superpowers:executing-plans` or `claude-mem:do`
+4. **Capture**: `/brain-capture` for learnings, `/brain-handoff` for session continuity
+5. **Extract**: `/brain-extract` + `new-feature-area` workflow for patterns
+
+### First-Time Plugin Setup
+
+```bash
+# Add marketplace and install
+/plugin marketplace add thedotmack/claude-mem
+/plugin install claude-mem
+/reload-plugins
+
+# Verify
+/plugin list
+```
+
+See `CLAUDE.md` → Required Plugins section for full setup instructions.
 
 ---
 

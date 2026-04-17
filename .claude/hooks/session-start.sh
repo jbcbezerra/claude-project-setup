@@ -44,7 +44,7 @@ if [ ! -f "$PLUGIN_MARKER" ]; then
   echo ""
   echo "=== Plugin Setup Required ==="
   echo "This project uses external plugins. If not installed, run:"
-  echo "  /plugin add-marketplace https://raw.githubusercontent.com/anthropics/claude-mem/main/plugin-registry.json"
+  echo "  /plugin marketplace add thedotmack/claude-mem"
   echo "  /plugin install claude-mem"
   echo "  /reload-plugins"
   echo ""

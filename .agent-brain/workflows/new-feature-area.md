@@ -8,6 +8,15 @@ Run this workflow when adding a new module, domain area, or significant feature 
 - Creating a new microservice or package in a monorepo
 - Building a new major feature that introduces new conventions
 
+## Prerequisites
+
+For major features, run `superpowers:brainstorming` first to:
+- Explore approaches with user collaboration
+- Create approved design spec (saved to `.agent-brain/specs/`)
+- Generate implementation plan (saved to `.agent-brain/tasks/`)
+
+This workflow then handles the **knowledge capture** side — ensuring new patterns and conventions are extracted into the brain for future sessions.
+
 ## Steps
 
 ### 1. Check existing patterns

@@ -97,7 +97,8 @@ The brain has three tiers based on *when* an agent reads them:
 │  commands/                # Terminal commands with flags, timeouts, gotchas
 │
 │  ── TIER 3: WRITE-BACK (agent writes during/after work) ─
-│  tasks/                   # Active plans and breakdowns: YYYYMMDD-<topic>/
+│  specs/                   # Design specs from brainstorming: YYYYMMDD-<topic>-design.md
+│  tasks/                   # Implementation plans and breakdowns: YYYYMMDD-<topic>/
 │  log/                     # Execution summaries: what was done, what's left
 │  inbox/                   # User-dumped raw input for the agent to process
 ```
@@ -109,6 +110,42 @@ The brain has three tiers based on *when* an agent reads them:
 **Tier 2 — Lookup.** Read on-demand when the current task touches a relevant area. Don't read all rules upfront — check `REGISTRY.md` to find which ones apply, then read those.
 
 **Tier 3 — Write-back.** The agent writes here. Plans go to `tasks/`, post-execution summaries go to `log/`. `inbox/` is a drop zone where the user can dump unstructured input (meeting notes, screenshots, research, ideas) for the agent to read and optionally promote to a higher-tier location.
+
+---
+
+### Task Directory Structure
+
+Simple tasks use a single file: `tasks/YYYYMMDD-topic.md`
+
+Complex multi-phase tasks use a directory with subdirectories per phase:
+
+```
+tasks/YYYYMMDD-topic/
+├── main-task.md                    # Master plan — links to all phases
+├── inventory/                      # Optional: baseline data, analysis artifacts
+├── prework/                        # Prerequisites before main phases
+│   ├── 01-first-prereq/
+│   │   ├── plan.md                 # What to do
+│   │   └── handoffs/               # Session boundaries within this phase
+│   │       ├── step-1.md
+│   │       ├── step-2.md
+│   │       └── complete.md
+│   └── 02-second-prereq/
+│       └── plan.md
+└── phases/                         # Main execution phases
+    ├── 01-phase-name/
+    │   ├── plan.md
+    │   └── handoffs/
+    └── 02-phase-name/
+        └── plan.md
+```
+
+**Conventions:**
+- Zero-pad phase numbers (`01-`, `02-`) for sort order
+- Each phase directory contains `plan.md` as the main file
+- Handoffs go in `handoffs/` subdirectory within their phase
+- `main-task.md` is the entry point — always read it first
+- Only create `handoffs/` when a phase spans multiple sessions
 
 ---
 
@@ -283,6 +320,8 @@ When something is learned that future sessions would benefit from:
 | Domain/business logic | `knowledge/<topic>.md` |
 | Recurring multi-step operation | `workflows/<topic>.md` |
 | Tricky terminal command | `commands/<topic>.md` |
+| Design spec (from brainstorming) | `specs/YYYYMMDD-<topic>-design.md` |
+| Implementation plan | `tasks/YYYYMMDD-<topic>/` |
 | Session summary | `log/YYYYMMDD-<topic>.md` |
 
 Do not auto-generate docs for every task. Capture only when material changes happened or the user asks. Always update `REGISTRY.md` when adding files. Prefer updating existing files over creating new ones.
@@ -293,12 +332,38 @@ Do not auto-generate docs for every task. Capture only when material changes hap
 
 When initializing `.agent-brain/` in a new repo:
 
-1. Create the full directory scaffold (all tiers).
+1. Create the full directory scaffold (all tiers, including `specs/`).
 2. Create `REGISTRY.md` with empty section headers.
 3. Generate `context/setup.md` by inspecting project config files (`package.json`, `Makefile`, `Cargo.toml`, `pyproject.toml`, `go.mod`, etc.).
 4. Generate `context/stack.md` from detected dependencies and framework versions.
 5. Scan for existing conventions and seed 1-2 pattern files from real code.
 6. Ask the user what to populate next.
+
+---
+
+## Plugin Integration
+
+This project uses three complementary systems:
+
+| System | Purpose | Skills |
+|--------|---------|--------|
+| `.agent-brain/` | Persistent project knowledge | `/brain-*` skills |
+| superpowers | Development workflow enforcement | TDD, debugging, review, planning |
+| claude-mem | Cross-session memory + exploration | `smart-explore`, `mem-search`, etc. |
+
+**Workflow integration:**
+1. **Design:** `superpowers:brainstorming` → spec in `.agent-brain/specs/`
+2. **Plan:** `superpowers:writing-plans` → plan in `.agent-brain/tasks/`
+3. **Execute:** `superpowers:executing-plans` or `claude-mem:do`
+4. **Capture:** `/brain-capture` for learnings, `/brain-handoff` for session continuity
+5. **Extract:** `/brain-extract` + `new-feature-area` workflow for patterns
+
+### Superpowers Location Override
+
+Save specs and plans to `.agent-brain/` instead of `docs/superpowers/`:
+- **Specs:** `.agent-brain/specs/YYYYMMDD-<topic>-design.md`
+- **Plans (simple):** `.agent-brain/tasks/YYYYMMDD-<topic>.md`
+- **Plans (complex):** `.agent-brain/tasks/YYYYMMDD-<topic>/main-task.md`
 
 ---
 
