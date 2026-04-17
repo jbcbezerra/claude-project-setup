@@ -14,6 +14,7 @@
 | **Stack**   | `<framework, language, runtime>` |
 | **Build**   | `<build command>`                |
 | **Test**    | `<test command>`                 |
+| **Lint**    | `<lint command>`                 |
 | **Format**  | `<format command>`               |
 | **VCS**     | `<git / git-svn / svn>`          |
 
@@ -284,8 +285,9 @@ The user can drop anything here — raw notes, screenshots, copy-pasted threads,
 Run in order. All must pass. If any fails, fix and restart from step 1.
 
 1. **Format** changed files only (never the whole project)
-2. **Test** — all tests pass
-3. **Build** — zero errors
+2. **Lint** changed files only — auto-fix what it can, error on the rest
+3. **Test** — all tests pass
+4. **Build** — zero errors
 
 Use the exact commands from the Project table above.
 If the environment prevents validation, state what was skipped and why.
@@ -296,14 +298,18 @@ Command fails 3 times → **stop**. Show the error, explain root cause, ask for 
 
 ---
 
-## Git Policy
+## VCS Policy
 
-<!-- Adjust per-project -->
+<!-- Adjust per-project. Examples for git and svn below. -->
 
 - Do not commit unless explicitly asked.
 - Conventional Commits: `feat:`, `fix:`, `refactor:`, `docs:`.
 - Atomic commits — one concern each.
 - Never force-push or skip hooks without explicit permission.
+- **File renames/moves**: Always use VCS commands to preserve history:
+  - Git: `git mv old_path new_path`
+  - SVN: `svn mv old_path new_path`
+  - Never use plain `mv` — it destroys VCS history.
 
 ---
 

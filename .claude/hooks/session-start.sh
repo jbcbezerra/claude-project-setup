@@ -52,4 +52,11 @@ if [ ! -f "$PLUGIN_MARKER" ]; then
   echo ""
 fi
 
+# Check for design specs
+SPEC_COUNT=$(find "$BRAIN_DIR/specs" -name "*.md" 2>/dev/null | wc -l)
+if [ "$SPEC_COUNT" -gt 0 ]; then
+  echo "Design specs: $SPEC_COUNT — check .agent-brain/specs/ for approved designs"
+fi
+
 echo "=== Read REGISTRY.md + context/ to orient ==="
+echo "Plugin skills: superpowers (TDD, debugging, planning) + claude-mem (smart-explore, memory)"

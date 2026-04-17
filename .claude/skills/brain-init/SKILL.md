@@ -34,6 +34,7 @@ Create the full tier structure:
   knowledge/
   workflows/
   commands/
+  specs/
   tasks/
   log/
   inbox/
@@ -158,6 +159,12 @@ Create `REGISTRY.md` with entries for all generated files:
 
 ## Commands
 <!-- No commands yet -->
+
+## Specs
+<!-- Design specs from superpowers:brainstorming -->
+
+## Tasks
+<!-- Implementation plans and handoffs -->
 ```
 
 ### 10. Update CLAUDE.md Project table

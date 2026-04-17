@@ -60,6 +60,7 @@ Count files per folder:
 | knowledge/ | N |
 | workflows/ | N |
 | commands/ | N |
+| specs/ | N |
 | tasks/ | N |
 | log/ | N |
 | inbox/ | N |
@@ -71,7 +72,7 @@ List any files in `inbox/`. If non-empty, suggest running `/brain-promote`.
 ### 7. Structure check
 
 Verify all expected directories exist:
-`context/`, `rules/`, `patterns/`, `decisions/`, `knowledge/`, `workflows/`, `commands/`, `tasks/`, `log/`, `inbox/`
+`context/`, `rules/`, `patterns/`, `decisions/`, `knowledge/`, `workflows/`, `commands/`, `specs/`, `tasks/`, `log/`, `inbox/`
 
 Report any missing directories.
 

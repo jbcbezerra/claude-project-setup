@@ -38,8 +38,9 @@ If issues are found, mention them to the user but don't block on fixing them unl
 
 ### 5. Check active work
 
-Look in `.agent-brain/tasks/` for in-progress plans or task breakdowns. If there are active tasks:
-- Read the plan
+Look in `.agent-brain/tasks/` and `.agent-brain/specs/` for in-progress plans or design specs. If there are active tasks:
+- Read the plan or spec
+- If a superpowers plan exists, use `superpowers:executing-plans` to continue
 - Ask the user if they want to continue this work or start something new
 
 ### 6. Check inbox
@@ -55,9 +56,18 @@ Based on what the user asks you to do:
 
 Only read what's relevant to the task — don't load the entire brain.
 
+### 8. Plugin awareness
+
+This project uses superpowers and claude-mem plugins:
+- Use `claude-mem:smart-explore` for token-efficient code navigation (AST-based)
+- Use `superpowers:brainstorming` before creating new features
+- Use `superpowers:systematic-debugging` when hitting issues
+- Use `superpowers:verification-before-completion` before claiming work is done
+
 ## Done when
 
 - You understand the project architecture and stack
 - You know what rules and patterns apply to your task area
 - You've checked for in-progress work and inbox items
+- You're aware of available plugin skills
 - You're ready to start the task

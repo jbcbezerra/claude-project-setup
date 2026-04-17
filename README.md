@@ -510,6 +510,38 @@ Run the pattern-miner agent on src/services/
 Run the test-pattern-miner agent on tests/
 ```
 
+### "I want to design a new feature" (with plugins)
+
+```
+superpowers:brainstorming
+```
+
+Then follow with `superpowers:writing-plans` → `superpowers:executing-plans`.
+
+### "I need to explore unfamiliar code efficiently" (with plugins)
+
+```
+claude-mem:smart-explore
+```
+
+Uses AST parsing for 4-8x token savings vs reading full files.
+
+### "I'm stuck on a bug" (with plugins)
+
+```
+superpowers:systematic-debugging
+```
+
+Enforces root cause investigation before proposing fixes.
+
+### "My work is complete — what now?" (with plugins)
+
+```
+superpowers:finishing-a-development-branch
+```
+
+Handles merge/PR decisions and worktree cleanup.
+
 ---
 
 ## Plugin Integration

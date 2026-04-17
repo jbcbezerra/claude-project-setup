@@ -7,6 +7,8 @@ user_invocable: true
 
 Save the current session's context, progress, and next steps so another session (or the same user later) can continue exactly where this one left off.
 
+> **Note:** If work is *complete* (not just paused), use `superpowers:finishing-a-development-branch` instead — it handles merge/PR decisions and cleanup. Use `/brain-handoff` when work is in-progress and will be continued later.
+
 ## Steps
 
 ### 1. Gather session context
