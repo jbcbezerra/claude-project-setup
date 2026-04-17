@@ -1,0 +1,53 @@
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Edit",
+      "Write",
+      "Glob",
+      "Grep",
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(cat:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(wc:*)",
+      "Bash(diff:*)",
+      "Bash(sort:*)",
+      "Bash(du:*)",
+      "Bash(file:*)",
+      "Bash(xargs cat:*)",
+      "Bash(xargs -I:*)",
+      "Bash(mkdir:*)",
+      "Bash(chmod:*)",
+      "Bash(bash /tmp/*)",
+      "Bash(python3:*)",
+      "Bash(npx ng:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx cypress:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(git -C:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git branch:*)",
+      "Bash(git show:*)",
+      "Bash(git stash:*)",
+      "Bash(git apply:*)",
+      "Bash(cp:*)",
+      "Bash(npx prettier:*)",
+      "Bash(npm run:*)"
+    ],
+    "deny": [
+      "Bash(git svn dcommit*)",
+      "Bash(git push*)",
+      "Bash(svn commit*)",
+      "Bash(svn ci *)"
+    ],
+    "ask": [
+      "Bash(git svn fetch*)",
+      "Bash(git svn rebase*)"
+    ]
+  }
+}
