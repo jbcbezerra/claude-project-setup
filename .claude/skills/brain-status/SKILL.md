@@ -46,6 +46,7 @@ Flag as **stale** if:
 - `rules/` or `patterns/` files: modified > 60 days ago
 - `decisions/` files: never stale (they're historical records)
 - `knowledge/` files: modified > 90 days ago
+- `specs/` files: modified > 90 days ago (skip if a corresponding directory in `tasks/` references the spec — that means it's still active)
 
 ### 5. Coverage counts
 

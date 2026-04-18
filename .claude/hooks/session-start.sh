@@ -46,6 +46,7 @@ if [ ! -f "$PLUGIN_MARKER" ]; then
   echo "This project uses external plugins. If not installed, run:"
   echo "  /plugin marketplace add thedotmack/claude-mem"
   echo "  /plugin install claude-mem"
+  echo "  /plugin install superpowers@claude-plugins-official"
   echo "  /reload-plugins"
   echo ""
   echo "After setup, create marker: touch $PLUGIN_MARKER"

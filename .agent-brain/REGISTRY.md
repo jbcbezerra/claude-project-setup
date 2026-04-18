@@ -43,3 +43,7 @@
 ## Log
 
 <!-- Execution summaries -->
+
+## Inbox
+
+<!-- User drop zone for unstructured input — process with /brain-promote -->

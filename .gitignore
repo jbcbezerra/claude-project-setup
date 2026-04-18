@@ -1,0 +1,19 @@
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Per-user Claude state (kept local)
+.claude/settings.local.json
+
+# Env / secrets
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log

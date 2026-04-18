@@ -10,9 +10,26 @@ Git-tracked markdown files organized into three tiers: **onramp** (read every se
 
 ## Quick Start
 
-1. Copy `CLAUDE.md`, `.claude/`, and `.agent-brain/` into your repo root
-2. Fill in the Project table at the top of `CLAUDE.md`
-3. Run `/brain-init` to auto-detect your stack and seed context + patterns
+1. **Install required plugins** (one-time per machine):
+
+   ```
+   /plugin marketplace add thedotmack/claude-mem
+   /plugin install claude-mem
+   /plugin install superpowers@claude-plugins-official
+   /reload-plugins
+   ```
+
+   Then create the marker file to suppress the session-start reminder:
+
+   ```bash
+   touch ~/.claude/.claude-project-setup-plugins-ok
+   ```
+
+   (Or run `bash .claude/setup.sh` after step 2 — it walks you through the same flow.)
+
+2. Copy `CLAUDE.md`, `.claude/`, and `.agent-brain/` into your repo root.
+3. Fill in the Project table at the top of `CLAUDE.md`.
+4. Run `/brain-init` to auto-detect your stack and seed context + patterns.
 
 ```
 /brain-init

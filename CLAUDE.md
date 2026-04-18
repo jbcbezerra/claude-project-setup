@@ -26,32 +26,35 @@ This project uses plugins from external marketplaces. Team members must install 
 
 ### Marketplaces
 
-| Name | URL |
-|------|-----|
-| claude-mem | `https://raw.githubusercontent.com/anthropics/claude-mem/main/plugin-registry.json` |
+| Name | Source |
+|------|--------|
+| claude-mem | `thedotmack/claude-mem` (https://github.com/thedotmack/claude-mem) |
+| claude-plugins-official | bundled with Claude Code (no marketplace add required) |
 
 ### Plugins
 
 | Plugin | Marketplace | Purpose |
 |--------|-------------|---------|
 | claude-mem | claude-mem | Persistent cross-session memory and knowledge bases |
+| superpowers | claude-plugins-official | Development workflow enforcement (TDD, debugging, planning, code review) |
 
 ### First-Time Setup
 
 Run these commands once per machine:
 
 ```bash
-# Add the marketplace
+# Add the third-party marketplace (only needed for claude-mem)
 /plugin marketplace add thedotmack/claude-mem
 
-# Install plugins
+# Install the required plugins
 /plugin install claude-mem
+/plugin install superpowers@claude-plugins-official
 
 # Reload to apply
 /reload-plugins
 ```
 
-To verify: run `/plugin list` — you should see `claude-mem` as installed.
+To verify: run `/plugin list` — you should see both `claude-mem` and `superpowers` as installed.
 
 After setup, create the marker file to suppress the session reminder:
 ```bash
