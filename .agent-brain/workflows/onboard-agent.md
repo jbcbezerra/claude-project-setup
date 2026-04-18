@@ -14,6 +14,8 @@ Follow this workflow at the start of a new session or when picking up a repo for
 
 Read `CLAUDE.md` at the repo root. This is the operating contract — it defines priorities, tone, verification loop, and git policy.
 
+**Monorepo check:** if `frontend/CLAUDE.md` and/or `backend/CLAUDE.md` exist, also read the one(s) that match your task area. Claude Code will load them automatically when editing files under their subtrees, but reading them upfront surfaces per-app build/test/lint commands before you start work.
+
 ### 2. Read tier-1 context
 
 Read all files in `.agent-brain/context/`:
@@ -50,9 +52,9 @@ Scan `.agent-brain/inbox/` for items the user may have dropped since the last se
 ### 7. Load task-relevant knowledge
 
 Based on what the user asks you to do:
-- Read applicable `rules/` files
-- Read applicable `patterns/` files
-- Read applicable `knowledge/` files
+- Read applicable `rules/` files — in a monorepo, start with `rules/shared/`, then add `rules/frontend/` or `rules/backend/` depending on where the task lives.
+- Read applicable `patterns/` files — use the app-matching subfolder (`patterns/frontend/` or `patterns/backend/`).
+- Read applicable `knowledge/` files — `knowledge/shared/` for cross-cutting domain, plus the app-matching subfolder.
 
 Only read what's relevant to the task — don't load the entire brain.
 

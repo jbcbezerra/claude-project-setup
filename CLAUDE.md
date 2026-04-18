@@ -6,17 +6,19 @@
 
 ## Project
 
+> **Monorepo variant.** Per-app build/test/lint/format commands live in `frontend/CLAUDE.md` and `backend/CLAUDE.md` — Claude Code automatically merges those when you edit files under their subtrees.
+
 <!-- Fill per-project -->
 
-| Field       | Value                            |
-|-------------|----------------------------------|
-| **Name**    | `<project-name>`                 |
-| **Stack**   | `<framework, language, runtime>` |
-| **Build**   | `<build command>`                |
-| **Test**    | `<test command>`                 |
-| **Lint**    | `<lint command>`                 |
-| **Format**  | `<format command>`               |
-| **VCS**     | `<git / git-svn / svn>`          |
+| Field          | Value                                                           |
+|----------------|-----------------------------------------------------------------|
+| **Name**       | `<project-name>`                                                |
+| **Layout**     | Monorepo — `frontend/` + `backend/` (rename if needed; see `.claude/setup.sh`) |
+| **Root build** | `<root-level build command, e.g. ./build.sh — or leave blank>`  |
+| **Test**       | See `frontend/CLAUDE.md` and `backend/CLAUDE.md`                |
+| **Lint**       | See `frontend/CLAUDE.md` and `backend/CLAUDE.md`                |
+| **Format**     | See `frontend/CLAUDE.md` and `backend/CLAUDE.md`                |
+| **VCS**        | `<git / git-svn / svn>`                                         |
 
 ---
 
@@ -79,6 +81,8 @@ Concise and direct. No filler. If ambiguous → ask.
 
 `.agent-brain/` is the project's persistent memory. It survives across sessions, agents, and worktrees.
 
+**Monorepo namespacing.** `rules/`, `patterns/`, and `knowledge/` are split into `shared/`, `frontend/`, `backend/` subfolders so per-app knowledge doesn't collide. `decisions/` (ADRs) and `workflows/` stay project-wide — they describe the whole system. There is still only one `.agent-brain/` at the repo root; the split is purely folder-level.
+
 The brain has three tiers based on *when* an agent reads them:
 
 ```
@@ -88,16 +92,24 @@ The brain has three tiers based on *when* an agent reads them:
 │
 │  ── TIER 1: ONRAMP (read on session start) ──────────────
 │  context/                 # What is this project?
-│    architecture.md        #   System design, module boundaries, data flow
-│    stack.md               #   Frameworks, versions, key libraries
+│    architecture.md        #   System design, module boundaries, data flow (both apps)
+│    stack.md               #   Frameworks, versions — with ## Frontend / ## Backend sections
 │    setup.md               #   Install, run, test, deploy — the agent README
 │
 │  ── TIER 2: LOOKUP (read when relevant to the task) ─────
-│  rules/                   # Hard constraints — MUST follow when writing code
-│  patterns/                # Concrete code templates — SHOULD copy structure from
-│  decisions/               # ADRs — WHY non-obvious choices were made
+│  rules/                   # Hard constraints — MUST follow
+│    shared/                #   Project-wide (VCS, secrets, cross-cutting style)
+│    frontend/              #   Frontend-only
+│    backend/               #   Backend-only
+│  patterns/                # Code templates — SHOULD copy structure from
+│    frontend/              #   Frontend patterns
+│    backend/               #   Backend patterns
+│  decisions/               # ADRs — project-wide; not split
 │  knowledge/               # Domain logic, business rules, external API docs
-│  workflows/               # Step-by-step playbooks for recurring operations
+│    shared/                #   API contracts, shared types, domain model
+│    frontend/              #   Frontend-only (UX conventions, component taxonomy)
+│    backend/               #   Backend-only (data model, external service quirks)
+│  workflows/               # Step-by-step playbooks — project-wide
 │  commands/                # Terminal commands with flags, timeouts, gotchas
 │
 │  ── TIER 3: WRITE-BACK (agent writes during/after work) ─
@@ -159,17 +171,24 @@ tasks/YYYYMMDD-topic/
 
 ```markdown
 ## Context
-- [Architecture](context/architecture.md) — Module boundaries, data flow
+- [Architecture](context/architecture.md) — Module boundaries, data flow (both apps)
 - [Stack](context/stack.md) — Frameworks, versions, key dependencies
 - [Setup](context/setup.md) — Install, run, test, deploy
 
-## Rules
-- [Naming Conventions](rules/naming.md) — File, function, and variable naming standards
-- [Error Handling](rules/error-handling.md) — How and where to handle errors
+## Rules — Shared
+- [Secrets Handling](rules/shared/secrets.md) — Never commit, always use env
 
-## Patterns
-- [Service](patterns/service.md) — Standard service/module skeleton
-- [Test](patterns/test.md) — Unit test file structure
+## Rules — Frontend
+- [Component Naming](rules/frontend/naming.md) — File and component name rules
+
+## Rules — Backend
+- [Error Handling](rules/backend/error-handling.md) — How errors propagate through the stack
+
+## Patterns — Frontend
+- [Component](patterns/frontend/component.md) — Standard component skeleton
+
+## Patterns — Backend
+- [Service](patterns/backend/service.md) — Standard service/module skeleton
 
 ## Decisions
 - [ADR-20260405: State Management](decisions/ADR-20260405-state-management.md) — Why we chose X over Y
@@ -322,11 +341,16 @@ When something is learned that future sessions would benefit from:
 
 | Learned | Destination |
 |---------|-------------|
-| Coding constraint (do/don't) | `rules/<topic>.md` |
-| Code skeleton to replicate | `patterns/<topic>.md` |
+| Coding constraint — cross-cutting | `rules/shared/<topic>.md` |
+| Coding constraint — frontend only | `rules/frontend/<topic>.md` |
+| Coding constraint — backend only | `rules/backend/<topic>.md` |
+| Code skeleton — frontend | `patterns/frontend/<topic>.md` |
+| Code skeleton — backend | `patterns/backend/<topic>.md` |
 | System design insight | `context/architecture.md` |
 | Non-obvious technical choice | `decisions/ADR-YYYYMMDD-<topic>.md` |
-| Domain/business logic | `knowledge/<topic>.md` |
+| Domain logic — shared across apps | `knowledge/shared/<topic>.md` |
+| Domain logic — frontend only | `knowledge/frontend/<topic>.md` |
+| Domain logic — backend only | `knowledge/backend/<topic>.md` |
 | Recurring multi-step operation | `workflows/<topic>.md` |
 | Tricky terminal command | `commands/<topic>.md` |
 | Design spec (from brainstorming) | `specs/YYYYMMDD-<topic>-design.md` |
@@ -341,11 +365,11 @@ Do not auto-generate docs for every task. Capture only when material changes hap
 
 When initializing `.agent-brain/` in a new repo:
 
-1. Create the full directory scaffold (all tiers, including `specs/`).
-2. Create `REGISTRY.md` with empty section headers.
-3. Generate `context/setup.md` by inspecting project config files (`package.json`, `Makefile`, `Cargo.toml`, `pyproject.toml`, `go.mod`, etc.).
-4. Generate `context/stack.md` from detected dependencies and framework versions.
-5. Scan for existing conventions and seed 1-2 pattern files from real code.
+1. Create the full directory scaffold (all tiers, including `specs/`). For monorepos, create `rules/{shared,frontend,backend}`, `patterns/{frontend,backend}`, `knowledge/{shared,frontend,backend}`.
+2. Create `REGISTRY.md` with empty section headers (monorepo-aware groupings).
+3. Generate `context/setup.md` by inspecting project config files per app (`frontend/package.json`, `backend/go.mod`, `backend/pyproject.toml`, etc.) plus any root-level build script.
+4. Generate `context/stack.md` with two sections (`## Frontend`, `## Backend`) auto-populated from each app's detected dependencies and framework versions.
+5. Scan for existing conventions per app and seed 1-2 pattern files from real code — land them in the correct `patterns/{frontend,backend}/` namespace.
 6. Ask the user what to populate next.
 
 ---

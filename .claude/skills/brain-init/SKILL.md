@@ -20,9 +20,25 @@ If `.agent-brain/` already exists with content, warn the user and ask whether to
 - **Fill gaps** — only create missing directories and files
 - **Abort**
 
-### 2. Create directory scaffold
+### 2. Detect monorepo shape
 
-Create the full tier structure:
+Before scaffolding, check whether this is a monorepo:
+
+```bash
+# Shape signals — any pair of these means "monorepo"
+ls frontend/CLAUDE.md 2>/dev/null
+ls backend/CLAUDE.md 2>/dev/null
+ls frontend/package.json frontend/angular.json frontend/next.config.* 2>/dev/null
+ls backend/go.mod backend/pyproject.toml backend/pom.xml backend/Cargo.toml 2>/dev/null
+```
+
+If the repo has **two or more top-level app directories each with their own language/framework markers**, treat it as a monorepo and use the namespaced scaffold in step 3. Otherwise, use the flat scaffold.
+
+> **Renamed directories:** If the user renamed `frontend/` → `web/` (or `backend/` → `api/`), detect that from the top-level `CLAUDE.md` "Layout" row, and use the renamed names for the namespaced subfolders below.
+
+### 3. Create directory scaffold
+
+**Single-repo scaffold (flat):**
 
 ```
 .agent-brain/
@@ -39,6 +55,34 @@ Create the full tier structure:
   log/
   inbox/
 ```
+
+**Monorepo scaffold (namespaced):**
+
+```
+.agent-brain/
+  REGISTRY.md
+  context/
+  rules/
+    shared/
+    frontend/          # or the renamed app name
+    backend/
+  patterns/
+    frontend/
+    backend/
+  decisions/           # project-wide — not split
+  knowledge/
+    shared/
+    frontend/
+    backend/
+  workflows/           # project-wide
+  commands/
+  specs/
+  tasks/
+  log/
+  inbox/
+```
+
+Add a `.gitkeep` to every leaf directory so the namespaces survive a fresh clone.
 
 ### 3. Scale assessment
 
@@ -61,6 +105,8 @@ find . -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx"
 Each subagent returns structured results. The coordinator (main session) merges them and writes all files.
 
 ### 4. Detect project type
+
+**Monorepo note:** run detection **per app directory** (e.g. `frontend/`, `backend/`). Each app typically has its own language. The detected values feed into per-app sections of `context/stack.md`, not one combined section.
 
 Search for project config files to determine language/framework:
 
@@ -98,6 +144,8 @@ Write an agent-focused setup guide based on detected config:
 - How to lint / format
 - Any environment variables needed (from `.env.example`, `docker-compose.yml`, etc.)
 
+**Monorepo:** document any root-level orchestration script (e.g. `./build.sh`, `make`, `turbo build`) at the top, then give per-app install/dev/test/build commands grouped under `## Frontend` and `## Backend` headings (or the renamed-app names).
+
 ### 6. Generate context/stack.md
 
 Write a tech stack overview:
@@ -107,6 +155,8 @@ Write a tech stack overview:
 - Build tooling
 - Test framework
 - Linter / formatter
+
+**Monorepo:** emit two sections — `## Frontend` and `## Backend` (or the renamed-app names) — each with its own full stack rundown. Do not merge them into one list.
 
 ### 7. Generate context/architecture.md (starter)
 
@@ -128,13 +178,20 @@ Scan the codebase for recurring structural patterns:
 4. Strip business logic, keep the shape
 5. Write each as a `patterns/<type>.md` file
 
+**Monorepo:** run pattern mining **separately for each app subtree** and land results in the correct namespace:
+- Patterns found under `frontend/` → `patterns/frontend/<type>.md`
+- Patterns found under `backend/` → `patterns/backend/<type>.md`
+Do not merge cross-app patterns into one file — the skeletons rarely line up between languages.
+
 If no clear patterns are found, skip this step and note it in the output.
 
 **For large repos:** Subagents each scan their assigned partition of directories. The coordinator deduplicates overlapping patterns across partitions before writing.
 
 ### 9. Populate REGISTRY.md
 
-Create `REGISTRY.md` with entries for all generated files:
+Create `REGISTRY.md` with entries for all generated files.
+
+**Single-repo layout:**
 
 ```markdown
 ## Context
@@ -165,6 +222,36 @@ Create `REGISTRY.md` with entries for all generated files:
 
 ## Tasks
 <!-- Implementation plans and handoffs -->
+```
+
+**Monorepo layout — use namespaced headings instead:**
+
+```markdown
+## Context
+- [Architecture](context/architecture.md) — System design, module boundaries (both apps)
+- [Stack](context/stack.md) — Frameworks, versions (## Frontend / ## Backend)
+- [Setup](context/setup.md) — Install, run, test, deploy
+
+## Rules — Shared
+## Rules — Frontend
+## Rules — Backend
+
+## Patterns — Frontend
+## Patterns — Backend
+
+## Decisions
+
+## Knowledge — Shared
+## Knowledge — Frontend
+## Knowledge — Backend
+
+## Workflows
+
+## Commands
+
+## Specs
+
+## Tasks
 ```
 
 ### 10. Update CLAUDE.md Project table

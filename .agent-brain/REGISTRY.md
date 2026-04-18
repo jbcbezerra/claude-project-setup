@@ -1,26 +1,47 @@
 # Agent Brain Registry
 
 > Index of all brain files. Read this FIRST every session.
+> Monorepo variant — `rules/`, `patterns/`, `knowledge/` are split by app.
 
 ## Context
 
 <!-- Tier 1: Read on session start -->
 
-## Rules
+## Rules — Shared
 
-<!-- Hard constraints for writing code -->
+<!-- Constraints that apply across the whole repo (VCS, secrets, naming, security) -->
 
-## Patterns
+## Rules — Frontend
 
-<!-- Code templates to copy from -->
+<!-- Constraints that only apply inside frontend/ -->
+
+## Rules — Backend
+
+<!-- Constraints that only apply inside backend/ -->
+
+## Patterns — Frontend
+
+<!-- Code templates copied from existing frontend/ code -->
+
+## Patterns — Backend
+
+<!-- Code templates copied from existing backend/ code -->
 
 ## Decisions
 
-<!-- ADRs explaining non-obvious choices -->
+<!-- ADRs — project-wide; not split by app -->
 
-## Knowledge
+## Knowledge — Shared
 
-<!-- Domain logic, business rules, external API docs -->
+<!-- Domain/business rules that both apps rely on (API contracts, shared types) -->
+
+## Knowledge — Frontend
+
+<!-- Frontend-only domain knowledge (e.g., UX conventions, component taxonomy) -->
+
+## Knowledge — Backend
+
+<!-- Backend-only domain knowledge (e.g., data model, external service quirks) -->
 
 ## Workflows
 
@@ -30,7 +51,7 @@
 
 ## Commands
 
-<!-- Terminal command reference -->
+<!-- Terminal command reference — e.g., root-level build.sh, deploy flow -->
 
 ## Specs
 

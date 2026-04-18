@@ -1,6 +1,8 @@
-# Agent Brain
+# Agent Brain — Monorepo Variant
 
-A persistent knowledge system for coding agents. Drop it into any repo and give Claude Code structured memory that survives across sessions.
+A persistent knowledge system for coding agents with first-class support for frontend + backend monorepos. Drop it into your repo and give Claude Code structured memory that survives across sessions — with per-app build/test/lint commands wired in automatically.
+
+> **Variant note.** This branch is the **monorepo variant** (two apps under `frontend/` + `backend/`). The single-repo version lives on `main`. Both share the same `.claude/` tooling; only the directory scaffold and `CLAUDE.md` layout differ.
 
 Git-tracked markdown files organized into three tiers: **onramp** (read every session), **lookup** (read when relevant), and **write-back** (agent outputs). Skills automate maintenance, agents audit for drift, workflows guide multi-step operations. All skills and agents **auto-scale** — they assess repo size and spawn subagents in parallel for large codebases.
 
@@ -8,7 +10,7 @@ Git-tracked markdown files organized into three tiers: **onramp** (read every se
 
 ---
 
-## Quick Start
+## Quick Start (monorepo)
 
 1. **Install required plugins** (one-time per machine):
 
@@ -25,17 +27,32 @@ Git-tracked markdown files organized into three tiers: **onramp** (read every se
    touch ~/.claude/.claude-project-setup-plugins-ok
    ```
 
-   (Or run `bash .claude/setup.sh` after step 2 — it walks you through the same flow.)
+2. Copy the whole template into your new repo root:
 
-2. Copy `CLAUDE.md`, `.claude/`, and `.agent-brain/` into your repo root.
-3. Fill in the Project table at the top of `CLAUDE.md`.
-4. Run `/brain-init` to auto-detect your stack and seed context + patterns.
+   ```bash
+   cp -r CLAUDE.md .claude .agent-brain frontend backend CONTRIBUTING.md LICENSE .gitignore <your-repo>/
+   ```
 
-```
-/brain-init
-```
+   You get a root `CLAUDE.md`, per-app `frontend/CLAUDE.md` and `backend/CLAUDE.md`, and a pre-namespaced `.agent-brain/`.
 
-That's it. The brain is live.
+3. **(Optional) Rename the app directories** if your project uses different names (e.g. `web/` + `api/`):
+
+   ```bash
+   bash .claude/setup.sh
+   ```
+
+   The setup script walks you through plugin setup, asks whether to rename `frontend/` / `backend/`, and if so runs `git mv` plus the matching rename of the `.agent-brain/` subfolders.
+
+4. **Put your source in place.** Your frontend app goes under `frontend/` (or the renamed dir); your backend app goes under `backend/`.
+
+5. **Fill in the CLAUDE.md files:**
+   - Root `CLAUDE.md` — fill the Project table (project name, root build command, VCS).
+   - `frontend/CLAUDE.md` — fill the Stack table (framework, dev / build / test / lint / format commands).
+   - `backend/CLAUDE.md` — same for the backend.
+
+6. **Run `/brain-init`** in Claude Code — it detects both stacks, seeds `context/stack.md` with `## Frontend` + `## Backend` sections, and seeds patterns under `patterns/frontend/` + `patterns/backend/`.
+
+That's it. The brain is live and per-app.
 
 ---
 
@@ -43,17 +60,18 @@ That's it. The brain is live.
 
 ```
 your-repo/
-├── CLAUDE.md                    # Operating contract — priorities, workflow, git policy
-├── .claude/
-│   ├── settings.json            # Hook configuration (auto-onboard, nudge, session-end)
-│   ├── hooks/                   # Shell scripts triggered by Claude Code events
-│   │   ├── session-start.sh     #   SessionStart — auto-read context, check inbox/tasks
-│   │   ├── post-edit-nudge.sh   #   PostToolUse — nudge to /brain-capture after edits
-│   │   └── session-end.sh       #   Stop — suggest /brain-handoff if material work done
+├── CLAUDE.md                    # Operating contract — priorities, workflow, VCS policy
+├── .claude/                     # Single .claude/ at root — hooks run from here
+│   ├── settings.json            #   Hook configuration (auto-onboard, nudge, session-end)
+│   ├── setup.sh                 #   Interactive bootstrap (plugin install + rename prompt)
+│   ├── hooks/                   #   Shell scripts triggered by Claude Code events
+│   │   ├── session-start.sh     #     SessionStart — auto-read context, check inbox/tasks
+│   │   ├── post-edit-nudge.sh   #     PostToolUse — nudge to /brain-capture after edits
+│   │   └── session-end.sh       #     Stop — suggest /brain-handoff if material work done
 │   ├── reference/
 │   │   └── scaling-strategy.md  #   Shared auto-scaling reference for all skills/agents
 │   ├── skills/                  # Slash commands for brain maintenance
-│   │   ├── brain-init/          #   /brain-init — bootstrap a new repo
+│   │   ├── brain-init/          #   /brain-init — bootstrap a new repo (monorepo-aware)
 │   │   ├── brain-capture/       #   /brain-capture — quick-capture learnings
 │   │   ├── brain-status/        #   /brain-status — health check
 │   │   ├── brain-extract/       #   /brain-extract — mine patterns from code
@@ -68,21 +86,45 @@ your-repo/
 │       ├── pattern-miner.md     #   Discover patterns from file clusters
 │       ├── test-pattern-miner.md#   Discover test patterns from test files
 │       └── context-farmer.md    #   Farm git history for context updates
-└── .agent-brain/                # The brain itself
-    ├── REGISTRY.md              # Index of everything
-    ├── .gitignore               # Excludes farmer state, temp files
-    ├── context/                 # Tier 1: project architecture, stack, setup
-    ├── rules/                   # Tier 2: coding constraints
-    ├── patterns/                # Tier 2: code templates to copy from
-    ├── decisions/               # Tier 2: ADRs
-    ├── knowledge/               # Tier 2: domain logic, business rules
-    ├── workflows/               # Tier 2: multi-step playbooks
-    ├── commands/                # Tier 2: terminal command reference
-    ├── specs/                   # Tier 3: design specs (from superpowers:brainstorming)
-    ├── tasks/                   # Tier 3: implementation plans + handoffs
-    ├── log/                     # Tier 3: execution summaries
-    └── inbox/                   # Tier 3: user drop zone
+├── .agent-brain/                # The brain — one per repo, namespaced by app
+│   ├── REGISTRY.md              #   Index of everything (monorepo-aware groupings)
+│   ├── .gitignore               #   Excludes farmer state, temp files
+│   ├── context/                 #   Tier 1: architecture, stack (## FE / ## BE), setup
+│   ├── rules/
+│   │   ├── shared/              #     Project-wide constraints (VCS, secrets, etc.)
+│   │   ├── frontend/            #     Frontend-only constraints
+│   │   └── backend/             #     Backend-only constraints
+│   ├── patterns/
+│   │   ├── frontend/            #     Frontend code templates
+│   │   └── backend/             #     Backend code templates
+│   ├── decisions/               #   ADRs — project-wide, not split by app
+│   ├── knowledge/
+│   │   ├── shared/              #     Cross-app domain (API contracts, shared types)
+│   │   ├── frontend/            #     Frontend-only domain knowledge
+│   │   └── backend/             #     Backend-only domain knowledge
+│   ├── workflows/               #   Tier 2: multi-step playbooks — project-wide
+│   ├── commands/                #   Tier 2: terminal command reference
+│   ├── specs/                   #   Tier 3: design specs (from superpowers:brainstorming)
+│   ├── tasks/                   #   Tier 3: implementation plans + handoffs
+│   ├── log/                     #   Tier 3: execution summaries
+│   └── inbox/                   #   Tier 3: user drop zone
+├── frontend/
+│   ├── CLAUDE.md                # App-specific: dev / build / test / lint / format
+│   └── (your frontend source — e.g. Angular, Next, React)
+└── backend/
+    ├── CLAUDE.md                # App-specific: build / run / test / lint / format
+    └── (your backend source — e.g. Go, Node, Python)
 ```
+
+---
+
+## How per-app CLAUDE.md works
+
+Claude Code merges every `CLAUDE.md` it finds on the path from the edited file up to the repo root. So when you open `frontend/src/App.tsx`, both `CLAUDE.md` (root) **and** `frontend/CLAUDE.md` get loaded. When you open `backend/internal/handler.go`, you get root + `backend/CLAUDE.md`.
+
+Consequence: the root file holds cross-cutting rules (priorities, VCS, plugin setup, agent-brain structure) and the per-app files hold the stuff that actually differs between apps (build command, test command, lint command, stack details). No flags, no switching — the right context just shows up.
+
+If you rename `frontend/` → `web/`, the per-app `CLAUDE.md` inside moves with it and still gets merged when editing files under `web/`. `.claude/setup.sh` does the rename for you and also renames the matching `.agent-brain/rules/frontend/` → `.agent-brain/rules/web/` (and the `patterns/` and `knowledge/` counterparts).
 
 ---
 
