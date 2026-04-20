@@ -39,4 +39,8 @@
     "superpowers@claude-plugins-official": true,
     "claude-mem@claude-mem": true
   }
+    "statusLine": {
+      "type": "command",
+      "command": "bash statusline.sh"
+  }
 }
