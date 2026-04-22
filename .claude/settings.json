@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/hooks/session-start.sh"
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/session-start.sh\""
           }
         ]
       }
@@ -16,7 +16,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/hooks/post-edit-nudge.sh"
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/post-edit-nudge.sh\""
           }
         ]
       }
@@ -26,7 +26,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/hooks/session-end.sh"
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/session-end.sh\""
           }
         ]
       }
@@ -38,9 +38,9 @@
     "code-simplifier@claude-plugins-official": true,
     "superpowers@claude-plugins-official": true,
     "claude-mem@claude-mem": true
-  }
-    "statusLine": {
-      "type": "command",
-      "command": "bash statusline.sh"
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "bash statusline.sh"
   }
 }
