@@ -42,7 +42,8 @@ Create the full tier structure:
 
 ### 3. Scale assessment
 
-Before scanning the codebase, assess its size to determine parallelization strategy. See `.claude/reference/scaling-strategy.md` for full details.
+Before scanning the codebase, assess its size to determine parallelization strategy. When fanning out to subagents, 
+follow `superpowers:dispatching-parallel-agents` for coordination and briefing.
 
 ```bash
 find . -type f \( -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" -o -name "*.py" -o -name "*.go" -o -name "*.rs" -o -name "*.java" -o -name "*.kt" -o -name "*.rb" -o -name "*.php" -o -name "*.cs" -o -name "*.vue" -o -name "*.svelte" \) \

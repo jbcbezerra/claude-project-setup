@@ -50,8 +50,6 @@ your-repo/
 │   │   ├── session-start.sh     #   SessionStart — auto-read context, check inbox/tasks
 │   │   ├── post-edit-nudge.sh   #   PostToolUse — nudge to /brain-capture after edits
 │   │   └── session-end.sh       #   Stop — suggest /brain-handoff if material work done
-│   ├── reference/
-│   │   └── scaling-strategy.md  #   Shared auto-scaling reference for all skills/agents
 │   ├── skills/                  # Slash commands for brain maintenance
 │   │   ├── brain-init/          #   /brain-init — bootstrap a new repo
 │   │   ├── brain-capture/       #   /brain-capture — quick-capture learnings
@@ -608,26 +606,10 @@ The brain improves with use. The more rules, patterns, and context it accumulate
 
 ## Auto-Scaling
 
-Every skill and agent automatically decides whether to use subagents and how many, based on the repo size. No configuration needed — it just measures and adapts.
-
-### How it works
-
-Before doing scan-heavy work, each skill/agent runs a scale assessment:
-
-```bash
-# Count source files (excluding generated dirs)
-find . -type f \( -name "*.ts" -o -name "*.py" -o -name "*.go" -o ... \) \
-  -not -path "*/node_modules/*" -not -path "*/dist/*" ... | wc -l
-```
-
-### Scaling tiers
-
-| Tier | Source files | Subagents | Strategy |
-|------|-------------|-----------|----------|
-| **Inline** | < 200 | 0 | Everything runs sequentially in the main session |
-| **Light** | 200 — 1,000 | 2-3 | Split by concern (rules vs patterns vs decisions) |
-| **Heavy** | 1,000 — 5,000 | 3-5 | Split by directory partition |
-| **Massive** | 5,000+ | 5-8 | One subagent per top-level domain directory |
+Every skill and agent measures repo size and decides whether to fan out to subagents. The mechanics of dispatching and 
+coordinating those subagents — when to parallelize, how to partition work, how to brief scoped subagents — live in the 
+`superpowers:dispatching-parallel-agents` skill. Skills and agents in this project call into it rather than defining 
+their own coordination patterns.
 
 ### Which skills scale
 
@@ -650,6 +632,6 @@ find . -type f \( -name "*.ts" -o -name "*.py" -o -name "*.go" -o ... \) \
 
 ### Coordination pattern
 
-Subagents do **read-only analysis** and return structured results. The coordinator (main session) handles all writes — merging results, deduplicating, and writing to `.agent-brain/`. This prevents file conflicts and ensures registry consistency.
-
-The full scaling strategy reference is at `.claude/reference/scaling-strategy.md`.
+Subagents do **read-only analysis** and return structured results. The coordinator (main session) handles all writes — 
+merging results, deduplicating, and writing to `.agent-brain/`. This prevents file conflicts and ensures registry 
+consistency.
